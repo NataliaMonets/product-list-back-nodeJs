@@ -23,16 +23,18 @@ class ProductService {
         if (!product._id) {
             throw new Error('provide id');
         }
-        const updatedProduct = await Product.findByIdAndUpdate(product._id, product, { new: true });
-        return updatedProduct;
+        await Product.findByIdAndUpdate(product._id, product);
+        const updatedProducts = await Product.find();
+        return updatedProducts;
     }
 
     async deleteProduct(id) {
         if (!id) {
             throw new Error('provide id');
         }
-        const product = await Product.findByIdAndDelete(id);
-        return product;
+        await Product.findByIdAndDelete(id);
+        const products = await Product.find();
+        return products;
     }
 }
 

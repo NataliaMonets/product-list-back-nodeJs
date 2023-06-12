@@ -1,4 +1,3 @@
-import Product from './Product.js';
 import ProductService from './ProductService.js';
 
 class ProductController {
@@ -31,8 +30,8 @@ class ProductController {
 
     async updateProduct(req, res) {
         try {
-            const updatedProduct = await ProductService.updateProduct(req.body);
-            return res.json(updatedProduct);
+            const updatedProducts = await ProductService.updateProduct(req.body);
+            return res.json(updatedProducts);
         } catch (e) {
             res.status(500).json(e.message);
         }
@@ -40,8 +39,8 @@ class ProductController {
 
     async deleteProduct(req, res) {
         try {
-            const product = await ProductService.deleteProduct(req.params.id);
-            return res.json(product);
+            const products = await ProductService.deleteProduct(req.params.id);
+            return res.json(products);
         } catch (e) {
             res.status(500).json(e.message);
         }
