@@ -1,7 +1,7 @@
 import Product from "../models/Product.js";
 
 class ProductService {
-    async createProduct(product, picture) {
+    async createProduct(product) {
         const createdProduct = await Product.create(product);
         return createdProduct;
     }

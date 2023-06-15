@@ -1,16 +1,6 @@
 import User from '../models/User.js';
-import bcrypt from 'bcryptjs';
 import { validationResult } from 'express-validator';
-import jwt from 'jsonwebtoken';
-import secretKey from './config.js';
-
-const generateAccessToken = (id, email) => {
-    const payload = {
-        id,
-        email
-    }
-    return jwt.sign(payload, secretKey.secret, { expiresIn: "24h" })
-}
+import AuthService from '../services/AuthService.js';
 
 class AuthController {
     async registration(req, res) {
@@ -20,16 +10,10 @@ class AuthController {
                 return res.status(400).json({message: 'Fields validation failed', errors});
             }
             const { email, password } = req.body;
-            const existingUser = await User.findOne({ email });
-            if (existingUser) {
-                return res.status(400).json({message: 'User already exists'});
-            }
-            const hashPassword = bcrypt.hashSync(password, 5);
-            const user = new User({email, password: hashPassword});
-            await user.save();
-            return  res.json({ message: 'The user is successfully registered' });
+            const user = await AuthService.registration(email, password);
+            return  res.json(user);
         } catch (e) {
-            res.status(400).json({ message: 'Registration error' });
+            res.status(400).json(e);
         }
     }
 
@@ -40,19 +24,11 @@ class AuthController {
                 return res.status(400).json({message: 'Fields validation failed', errors});
             }
             const { email, password } = req.body;
-            const existingUser = await User.findOne({ email });
-            if (!existingUser) {
-                return res.status(400).json({message: 'User does not exists'});
-            }
-            const validPassword = bcrypt.compareSync(password, existingUser.password);
-            if (!validPassword) {
-                return res.status(400).json({message: 'Invalid password'});
-            }
-            const token = generateAccessToken(existingUser._id, existingUser.email);
-            existingUser.token = token;
-            return res.json(existingUser)
+            const user = await AuthService.login(email, password);
+            res.cookie('accessToken', user.token, {maxAge: 24 * 60 * 60 * 1000, httpOnly: true});
+            return res.json(user)
         } catch (e) {
-            res.status(400).json({ message: 'Login error' });
+            res.status(400).json(e);
         }
     }
 
@@ -67,7 +43,10 @@ class AuthController {
 
     async logout(req, res) {
         try {
-            
+            const { accessToken } = req.cookies;
+            const token = await AuthService.logout(accessToken);
+            res.clearCookie('accessToken');
+            return res.json(token);
         } catch (e) {
             res.status(400).json(e);
         }
