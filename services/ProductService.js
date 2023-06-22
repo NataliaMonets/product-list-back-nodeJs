@@ -1,7 +1,12 @@
 import Product from "../models/Product.js";
+import ApiError from '../exceptions/api-error.js';
 
 class ProductService {
     async createProduct(product) {
+        const existingProduct = await Product.findOne({name: product.name});
+        if (existingProduct) {
+            throw ApiError.BadRequest('Product already exists');
+        }
         const createdProduct = await Product.create(product);
         return createdProduct;
     }
@@ -13,7 +18,7 @@ class ProductService {
 
     async getProduct(id) {
         if (!id) {
-            throw new Error('provide id');
+            throw ApiError.BadRequest('Provide product id');
         }
         const product = await Product.findById(id);
         return product;
@@ -21,7 +26,7 @@ class ProductService {
 
     async updateProduct(product) {
         if (!product._id) {
-            throw new Error('provide id');
+            throw ApiError.BadRequest('Provide product id');
         }
         await Product.findByIdAndUpdate(product._id, product);
         const updatedProducts = await Product.find();
@@ -30,7 +35,7 @@ class ProductService {
 
     async deleteProduct(id) {
         if (!id) {
-            throw new Error('provide id');
+            throw ApiError.BadRequest('Provide product id');
         }
         await Product.findByIdAndDelete(id);
         const products = await Product.find();

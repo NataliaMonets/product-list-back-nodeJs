@@ -4,6 +4,7 @@ import productRouter from './routers/ProductRouter.js';
 import cors from 'cors';
 import authRouter from './routers/AuthRouter.js';
 import cookieParser from 'cookie-parser';
+import { errorMiddleware } from './middleware/error-middleware.js';
 
 const PORT = 5000;
 const DB_URL = `mongodb+srv://user:user@cluster0.muovxrb.mongodb.net/?retryWrites=true&w=majority`
@@ -15,6 +16,7 @@ app.use(cookieParser());
 app.use(cors());
 app.use('/', productRouter);
 app.use('/auth', authRouter);
+app.use(errorMiddleware);
 
 async function startApp() {
     try {
