@@ -5,7 +5,7 @@ class ValidationService {
     async fieldsValidation(req) {
         const errors = validationResult(req);
         if (!errors.isEmpty()) {
-            throw ApiError.BadRequest('Fields validation failed', errors);
+            throw ApiError.BadRequest('Fields validation failed', errors.array());
         }
         return;
     }

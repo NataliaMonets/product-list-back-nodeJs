@@ -7,13 +7,16 @@ import cookieParser from 'cookie-parser';
 import { errorMiddleware } from './middleware/error-middleware.js';
 
 const PORT = 5000;
-const DB_URL = `mongodb+srv://user:user@cluster0.muovxrb.mongodb.net/?retryWrites=true&w=majority`
+const DB_URL = `mongodb+srv://user:user@cluster0.muovxrb.mongodb.net/?retryWrites=true&w=majority`;
 
-const app = express()
+const app = express();
 
 app.use(express.json());
 app.use(cookieParser());
-app.use(cors());
+app.use(cors({
+    origin: 'http://localhost:4200',
+    credentials: true
+  }));
 app.use('/', productRouter);
 app.use('/auth', authRouter);
 app.use(errorMiddleware);

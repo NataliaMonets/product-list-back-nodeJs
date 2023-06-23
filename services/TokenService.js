@@ -8,7 +8,7 @@ class TokenService {
             id,
             email
         };
-        return jwt.sign(payload, secretKey.secret, { expiresIn: "24h" });
+        return jwt.sign(payload, secretKey.secret, { expiresIn: "12h" });
     }
 
     async saveToken(id, token) {
@@ -23,6 +23,20 @@ class TokenService {
 
     async removeToken(token) {
         const tokenData = await Token.deleteOne({token});
+        return tokenData;
+    }
+
+    async validateAccessToken(token) {
+        try {
+            const userData = jwt.verify(token, secretKey.secret);
+            return userData;
+        } catch (e) {
+            return null;
+        }
+    }
+
+    async findToken(token) {
+        const tokenData = await Token.findOne({token});
         return tokenData;
     }
 }
