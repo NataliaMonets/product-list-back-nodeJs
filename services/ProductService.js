@@ -28,6 +28,10 @@ class ProductService {
         if (!product._id) {
             throw ApiError.BadRequest('Provide product id');
         }
+        const existingProduct = await Product.findOne({name: product.name});
+        if (existingProduct) {
+            throw ApiError.BadRequest('Product already exists');
+        }
         await Product.findByIdAndUpdate(product._id, product);
         const updatedProducts = await Product.find();
         return updatedProducts;
